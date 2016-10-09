@@ -14,6 +14,11 @@ import Html exposing (Html)
 import WebSocket
 import Vote
 import Json.Decode
+import Json.Encode
+
+
+wsUrl =
+    "ws://localhost:8080"
 
 
 type alias Model =
@@ -43,7 +48,10 @@ update msg model =
 
         AppMessage localVoteMsg ->
             -- TODO: persiste the new message to scuttlebot
-            ( model, Cmd.none )
+            ( model
+            , WebSocket.send wsUrl
+                (Json.Encode.encode 0 (Vote.encodeMsg localVoteMsg))
+            )
 
 
 view : Model -> Html Msg
@@ -57,6 +65,6 @@ main =
         , update = update
         , subscriptions =
             \_ ->
-                WebSocket.listen "ws://localhost:8080" FromWebsocket
+                WebSocket.listen wsUrl FromWebsocket
         , view = view
         }

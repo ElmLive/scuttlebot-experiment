@@ -4,6 +4,7 @@ import Html.App
 import Html exposing (Html)
 import Html.Events exposing (onClick)
 import Json.Decode
+import Json.Encode
 
 
 type alias Model =
@@ -80,3 +81,23 @@ decodeMsg =
     Json.Decode.customDecoder
         (Json.Decode.at [ "value", "content", "type" ] Json.Decode.string)
         (msgFromString >> Result.fromMaybe "unexpected vote type")
+
+
+msgToString : Msg -> String
+msgToString msg =
+    case msg of
+        VoteRed ->
+            "vote-red"
+
+        VoteGreen ->
+            "vote-green"
+
+        VoteBlue ->
+            "vote-blue"
+
+
+encodeMsg : Msg -> Json.Encode.Value
+encodeMsg msg =
+    Json.Encode.object
+        [ ( "type", Json.Encode.string (msgToString msg) )
+        ]
