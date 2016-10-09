@@ -3,6 +3,7 @@ module Vote exposing (..)
 import Html.App
 import Html exposing (Html)
 import Html.Events exposing (onClick)
+import Json.Decode
 
 
 type alias Model =
@@ -56,3 +57,26 @@ main =
         , update = update
         , view = view
         }
+
+
+msgFromString : String -> Maybe Msg
+msgFromString string =
+    case string of
+        "vote-red" ->
+            Just VoteRed
+
+        "vote-green" ->
+            Just VoteGreen
+
+        "vote-blue" ->
+            Just VoteBlue
+
+        _ ->
+            Nothing
+
+
+decodeMsg : Json.Decode.Decoder Msg
+decodeMsg =
+    Json.Decode.customDecoder
+        (Json.Decode.at [ "value", "content", "type" ] Json.Decode.string)
+        (msgFromString >> Result.fromMaybe "unexpected vote type")
