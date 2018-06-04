@@ -9,7 +9,6 @@
 
 module Main exposing (..)
 
-import Html.App
 import Html exposing (Html)
 import WebSocket
 import Vote
@@ -56,11 +55,11 @@ update msg model =
 
 view : Model -> Html Msg
 view model =
-    Html.App.map AppMessage (Vote.view model.votes)
+    Html.map AppMessage (Vote.view model.votes)
 
 
 main =
-    Html.App.program
+    Html.program
         { init = ( initialModel, Cmd.none )
         , update = update
         , subscriptions =

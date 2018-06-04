@@ -1,6 +1,5 @@
 module Vote exposing (..)
 
-import Html.App
 import Html exposing (Html)
 import Html.Events exposing (onClick)
 import Json.Decode
@@ -51,36 +50,25 @@ view model =
         ]
 
 
-main : Program Never
-main =
-    Html.App.beginnerProgram
-        { model = initialModel
-        , update = update
-        , view = view
-        }
-
-
-msgFromString : String -> Maybe Msg
-msgFromString string =
-    case string of
-        "vote-red" ->
-            Just VoteRed
-
-        "vote-green" ->
-            Just VoteGreen
-
-        "vote-blue" ->
-            Just VoteBlue
-
-        _ ->
-            Nothing
-
-
 decodeMsg : Json.Decode.Decoder Msg
 decodeMsg =
-    Json.Decode.customDecoder
-        (Json.Decode.at [ "value", "content", "type" ] Json.Decode.string)
-        (msgFromString >> Result.fromMaybe "unexpected vote type")
+    let
+        decodeToMsg string =
+            case string of
+                "vote-red" ->
+                    Json.Decode.succeed VoteRed
+
+                "vote-green" ->
+                    Json.Decode.succeed VoteGreen
+
+                "vote-blue" ->
+                    Json.Decode.succeed VoteBlue
+
+                _ ->
+                    Json.Decode.fail ("unexpected vote type: " ++ string)
+    in
+        Json.Decode.at [ "value", "content", "type" ] Json.Decode.string
+            |> Json.Decode.andThen decodeToMsg
 
 
 msgToString : Msg -> String
